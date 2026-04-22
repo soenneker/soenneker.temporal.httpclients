@@ -1,20 +1,19 @@
 using Soenneker.Temporal.HttpClients.Abstract;
-using Soenneker.Tests.FixturedUnit;
-using Xunit;
+using Soenneker.Tests.HostedUnit;
 
 namespace Soenneker.Temporal.HttpClients.Tests;
 
-[Collection("Collection")]
-public sealed class TemporalOpenApiHttpClientTests : FixturedUnitTest
+[ClassDataSource<Host>(Shared = SharedType.PerTestSession)]
+public sealed class TemporalOpenApiHttpClientTests : HostedUnitTest
 {
     private readonly ITemporalOpenApiHttpClient _httpclient;
 
-    public TemporalOpenApiHttpClientTests(Fixture fixture, ITestOutputHelper output) : base(fixture, output)
+    public TemporalOpenApiHttpClientTests(Host host) : base(host)
     {
         _httpclient = Resolve<ITemporalOpenApiHttpClient>(true);
     }
 
-    [Fact]
+    [Test]
     public void Default()
     {
 
