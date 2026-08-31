@@ -11,13 +11,11 @@ using Soenneker.Utils.HttpClientCache.Abstract;
 
 namespace Soenneker.Temporal.HttpClients;
 
-///<inheritdoc cref="ITemporalOpenApiHttpClient"/>
 public sealed class TemporalOpenApiHttpClient : ITemporalOpenApiHttpClient
 {
     private readonly IHttpClientCache _httpClientCache;
     private readonly IConfiguration _config;
-
-    private const string _prodBaseUrl = "https://api.workos.com";
+    private readonly string _cacheKey = $"{nameof(TemporalOpenApiHttpClient)}-{Guid.NewGuid():N}";
 
     public TemporalOpenApiHttpClient(IHttpClientCache httpClientCache, IConfiguration config)
     {
@@ -27,11 +25,11 @@ public sealed class TemporalOpenApiHttpClient : ITemporalOpenApiHttpClient
 
     public ValueTask<HttpClient> Get(CancellationToken cancellationToken = default)
     {
-        return _httpClientCache.Get(nameof(TemporalOpenApiHttpClient), (config: _config, baseUrl: _config["Temporal:ClientBaseUrl"] ?? _prodBaseUrl), static state =>
+        return _httpClientCache.Get(_cacheKey, (config: _config, baseUrl: _config.GetValueStrict<string>("Temporal:ClientBaseUrl")), static state =>
         {
             var apiKey = state.config.GetValueStrict<string>("Temporal:ApiKey");
-            string authHeaderName = state.config["Temporal:AuthHeaderName"] ?? "Bearer {token}";
-            string authHeaderValueTemplate = state.config["Temporal:AuthHeaderValueTemplate"] ?? "{token}";
+            string authHeaderName = state.config["Temporal:AuthHeaderName"] ?? "Authorization";
+            string authHeaderValueTemplate = state.config["Temporal:AuthHeaderValueTemplate"] ?? "Bearer {token}";
             string authHeaderValue = authHeaderValueTemplate.Replace("{token}", apiKey, StringComparison.Ordinal);
 
             return new HttpClientOptions
@@ -50,7 +48,7 @@ public sealed class TemporalOpenApiHttpClient : ITemporalOpenApiHttpClient
     /// </summary>
     public void Dispose()
     {
-        _httpClientCache.RemoveSync(nameof(TemporalOpenApiHttpClient));
+        _httpClientCache.RemoveSync(_cacheKey);
     }
 
     /// <summary>
@@ -59,6 +57,6 @@ public sealed class TemporalOpenApiHttpClient : ITemporalOpenApiHttpClient
     /// <returns>A task that represents the asynchronous operation.</returns>
     public ValueTask DisposeAsync()
     {
-        return _httpClientCache.Remove(nameof(TemporalOpenApiHttpClient));
+        return _httpClientCache.Remove(_cacheKey);
     }
 }

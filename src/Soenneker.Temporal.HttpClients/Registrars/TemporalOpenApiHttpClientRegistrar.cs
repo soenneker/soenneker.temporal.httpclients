@@ -6,7 +6,7 @@ using Soenneker.Utils.HttpClientCache.Registrar;
 namespace Soenneker.Temporal.HttpClients.Registrars;
 
 /// <summary>
-/// Registers the OpenAPI HttpClient wrapper for dependency injection.
+/// Registers the authenticated Temporal HTTP client.
 /// </summary>
 public static class TemporalOpenApiHttpClientRegistrar
 {
