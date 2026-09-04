@@ -11,6 +11,7 @@ using Soenneker.Utils.HttpClientCache.Abstract;
 
 namespace Soenneker.Temporal.HttpClients;
 
+/// <inheritdoc cref="ITemporalOpenApiHttpClient" />
 public sealed class TemporalOpenApiHttpClient : ITemporalOpenApiHttpClient
 {
     private readonly IHttpClientCache _httpClientCache;
