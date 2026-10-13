@@ -26,9 +26,9 @@ public sealed class TemporalOpenApiHttpClient : ITemporalOpenApiHttpClient
 
     public ValueTask<HttpClient> Get(CancellationToken cancellationToken = default)
     {
-        return _httpClientCache.Get(_cacheKey, (config: _config, baseUrl: _config.GetValueStrict<string>("Temporal:ClientBaseUrl")), static state =>
+        return _httpClientCache.Get(_cacheKey, (config: _config, baseUrl: _config.GetStringStrict("Temporal:ClientBaseUrl")), static state =>
         {
-            var apiKey = state.config.GetValueStrict<string>("Temporal:ApiKey");
+            var apiKey = state.config.GetStringStrict("Temporal:ApiKey");
             string authHeaderName = state.config["Temporal:AuthHeaderName"] ?? "Authorization";
             string authHeaderValueTemplate = state.config["Temporal:AuthHeaderValueTemplate"] ?? "Bearer {token}";
             string authHeaderValue = authHeaderValueTemplate.Replace("{token}", apiKey, StringComparison.Ordinal);
